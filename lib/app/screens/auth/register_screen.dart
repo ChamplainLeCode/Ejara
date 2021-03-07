@@ -62,9 +62,26 @@ class _RegisterState extends State<RegisterScreen> {
                         fit: BoxFit.cover),
                   ),
                 ),
-                Center(
-                  child: Image(image: AssetImage("images/logo.jpg")),
-                )
+                Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          SizedBox(height: 50),
+                          Image(
+                            image: AssetImage("images/logo.jpg"),
+                            width: 100,
+                            height: 120,
+                          ),
+                          SizedBox(height: 30),
+                          Center(
+                              child: Text("Create an Account",
+                                  style: TextStyle(
+                                      color: Style.whiteColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)))
+                        ]))
               ])),
           Container(
             padding: EdgeInsets.only(left: 10, right: 10),
@@ -136,67 +153,68 @@ class _RegisterState extends State<RegisterScreen> {
                     margin: EdgeInsets.only(top: 10),
                     alignment: Alignment.centerLeft,
                   ),
-                  isLoading
-                      ? Container(
-                          margin: EdgeInsets.only(top: 30),
-                          width: size.width,
-                          height: 40,
-                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                          child: Center(
-                              child: CircularProgressIndicator(
-                            backgroundColor: Colors.white,
-                          )),
-                        )
-                      : Container(
-                          margin: EdgeInsets.only(top: 30),
-                          width: size.width,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Style.primaryColor),
-                          child: StatefulBuilder(builder: (_, st) {
-                            return FlatButton(
-                              textColor: Style.whiteColor,
-                              child: Text("Next"),
-                              onPressed: () async {
-                                if (_formKey.currentState.validate() &&
-                                    countryKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-                                  st(() => isLoading = true);
-                                  _user.phone =
-                                      countryKey.currentState.countryPhone;
-                                  _user.countryCode =
-                                      countryKey.currentState.countryCode;
-                                  ResponseEntity<String> response =
-                                      await KareeRouter.goto(
-                                          "/security/validate/register",
-                                          parameter: _user);
-                                  if (mounted) {
-                                    st(() => isLoading = false);
-                                    if (response.status) {
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              duration: Duration(seconds: 10),
-                                              content:
-                                                  Text("Welcome on Ejara")));
-                                      _formKey.currentState.reset();
-                                      countryKey.currentState.reset();
-                                    } else {
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              duration: Duration(seconds: 10),
-                                              content: Text(response.body)));
+                  StatefulBuilder(
+                      builder: (_, st) => isLoading
+                          ? Container(
+                              margin: EdgeInsets.only(top: 30),
+                              width: size.width,
+                              height: 40,
+                              padding: EdgeInsets.only(top: 5, bottom: 5),
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                backgroundColor: Colors.white,
+                              )),
+                            )
+                          : Container(
+                              margin: EdgeInsets.only(top: 30, bottom: 30),
+                              width: size.width,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Style.primaryColor),
+                              child: FlatButton(
+                                textColor: Style.whiteColor,
+                                child: Text("Next"),
+                                onPressed: () async {
+                                  print('isloadin = $isLoading');
+                                  if (_formKey.currentState.validate() &&
+                                      countryKey.currentState.validate()) {
+                                    _formKey.currentState.save();
+                                    isLoading = true;
+                                    st(() {});
+                                    _user.phone =
+                                        countryKey.currentState.countryPhone;
+                                    _user.countryCode =
+                                        countryKey.currentState.countryCode;
+                                    ResponseEntity<String> response =
+                                        await KareeRouter.goto(
+                                            "/security/validate/register",
+                                            parameter: _user);
+                                    if (mounted) {
+                                      st(() => isLoading = false);
+                                      if (response.status) {
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                duration: Duration(seconds: 10),
+                                                content:
+                                                    Text("Welcome on Ejara")));
+                                        _formKey.currentState.reset();
+                                        countryKey.currentState.reset();
+                                      } else {
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                duration: Duration(seconds: 10),
+                                                content: Text(response.body)));
+                                      }
                                     }
+                                    // st(() => isLoading = true);
+                                    // Future.delayed(Duration(seconds: 2),
+                                    //     () => st(() => isLoading = false));
+                                  } else {
+                                    print('form invalid');
                                   }
-                                  // st(() => isLoading = true);
-                                  // Future.delayed(Duration(seconds: 2),
-                                  //     () => st(() => isLoading = false));
-                                } else {
-                                  print('form invalid');
-                                }
-                              },
-                            );
-                          }))
+                                },
+                              )))
                 ],
               ),
             ),
